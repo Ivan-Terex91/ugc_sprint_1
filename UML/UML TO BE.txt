@@ -1,0 +1,38 @@
+@startuml
+skinparam componentStyle uml2
+actor Client #line:black
+component "Administration\nService" as AdminService #line:orange
+component "ETL\nPostgres\nto Elastic" as ETL_PG_ES #line:blue
+component "Movies\nService" as Movies
+component "Auth\nService" as Auth #line:green
+component "ETL\nKafka\nto ClickHouse" as ETL_KF_CH #line:gray
+component "Buffer data\nto Kafka Service" as Buf_Kafka #line:gray
+database Postgres
+database Redis
+database Elastic
+database Kafka
+database ClickHouse
+
+Client -[#green]> Auth: "Аутентификация / Регистрация\nклиента"
+Auth -[#green]-> Postgres: "Сохранение клиента в базу"
+Auth -[#green]> Client: "Access и Refresh токены"
+Auth -[#green]> Redis: "Сохранение 'протухших'\nRefresh токенов"
+
+Client --> Movies: "Запрос контента"
+Client <-- Movies: "Получение контента"
+Movies -> Auth: "Проверка токена\nи прав пользователя"
+Movies --> Redis: "Сохранение / проверка кэша"
+Movies --> Elastic: "Запрос данных"
+
+Postgres <-[#blue]- ETL_PG_ES: "Запрос новых / обновлённых данных"
+Redis <-[#blue]- ETL_PG_ES : "Сохранение состояния"
+ETL_PG_ES -[#blue]-> Elastic: "Загрузка новых / обновлённых данных"
+
+Postgres <-[#orange] AdminService: "Загрузка контента в базу"
+
+Buf_Kafka <-[#gray] Movies: "Отправка данных"
+Buf_Kafka -[#gray]-> Kafka: "Загрузка данных"
+Kafka <-[#gray]- ETL_KF_CH: "Запрос новых / обновлённых данных"
+ClickHouse <-[#gray]- ETL_KF_CH: "Загрузка новых / обновлённых данных"
+@enduml
+
