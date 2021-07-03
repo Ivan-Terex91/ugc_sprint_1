@@ -5,6 +5,8 @@ services:
     image: confluentinc/cp-zookeeper:6.2.0
     container_name: zookeeper
     hostname: zookeeper
+    ports:
+      - '32181:32181'
     env_file:
       - ./.env
 
@@ -56,6 +58,7 @@ services:
     ports:
       - "9092:9092"
       - "9101:9101"
+      - '29092:29092'
     env_file:
       - ./.env
 
@@ -85,14 +88,15 @@ services:
 
   kafka-etl:
     build:
-      context: ./kafka-etl
+      context: etl
       dockerfile: ../docker/development/kafka-etl/Dockerfile
     volumes:
-      - ./kafka-etl:/usr/src/app/
+      - ./etl:/usr/src/app/
     env_file:
       - ./.env
     depends_on:
       - broker
+      - control-center
       - schema-registry
       - clickhouse-node1
       - clickhouse-node2
