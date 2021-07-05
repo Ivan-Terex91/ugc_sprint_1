@@ -34,9 +34,9 @@ async def shutdown():
 
 @app.post("/progress-film/", tags=["produce_received_data"])
 async def kafka_produce_received_data(
-        progress_film: ProgressFilmModel,
-        auth_user=Depends(auth_current_user),
-        producer: AIOKafkaProducer = Depends(get_kafka_producer),
+    progress_film: ProgressFilmModel,
+    auth_user=Depends(auth_current_user),
+    producer: AIOKafkaProducer = Depends(get_kafka_producer),
 ):
     await producer.send(
         topic=config.TOPIC,
