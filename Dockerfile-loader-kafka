@@ -1,0 +1,12 @@
+FROM python:3.9-slim
+EXPOSE 9999
+WORKDIR /loader_data_to_kafka
+
+RUN apt-get update && apt-get --yes upgrade
+
+COPY ./requirements /loader_data_to_kafka/requirements
+RUN pip install -r /loader_data_to_kafka/requirements/loader-kafka.txt --no-cache-dir
+
+COPY ./loader_data_to_kafka /loader_data_to_kafka
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "9999", "--reload"]
