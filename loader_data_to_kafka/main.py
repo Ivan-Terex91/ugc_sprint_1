@@ -1,12 +1,11 @@
-import asyncio
 import logging
 
 import uvicorn as uvicorn
 from aiokafka import AIOKafkaProducer
-from core import auth, config, kafka
+from core import auth, config, my_kafka
 from core.auth import AuthClient, auth_current_user
-from core.kafka import get_kafka_producer
 from core.logger import LOGGING
+from core.my_kafka import get_kafka_producer
 from fastapi import Depends, FastAPI
 from fastapi.responses import ORJSONResponse
 from models.progress_film import ProgressFilmModel
@@ -22,14 +21,13 @@ app = FastAPI(
 @app.on_event("startup")
 async def startup():
     auth.auth_client = AuthClient(base_url=config.AUTH_URL)
-    await asyncio.sleep(10)
-    kafka.kafka_producer = AIOKafkaProducer(bootstrap_servers=config.KAFKA_DSN)
-    await kafka.kafka_producer.start()
+    my_kafka.kafka_producer = AIOKafkaProducer(bootstrap_servers=config.KAFKA_DSN)
+    await my_kafka.kafka_producer.start()
 
 
 @app.on_event("shutdown")
 async def shutdown():
-    await kafka.kafka_producer.stop()
+    await my_kafka.kafka_producer.stop()
 
 
 @app.post("/progress-film/", tags=["produce_received_data"])

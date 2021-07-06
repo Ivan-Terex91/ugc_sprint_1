@@ -59,9 +59,6 @@ services:
       - "29092:29092"
     env_file:
       - ./.env
-    healthcheck:
-      test: ["CMD", "nc", "-vz", "broker", "29092"]
-
 
   schema-registry:
     image: confluentinc/cp-schema-registry:6.2.0
