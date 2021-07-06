@@ -2,5 +2,6 @@
 .pytest_cache/
 venv/
 */__pycache__
-
+*.pyc
+__pycache__/
 .env

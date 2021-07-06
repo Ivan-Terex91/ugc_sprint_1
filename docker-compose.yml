@@ -58,12 +58,11 @@ services:
     ports:
       - "9092:9092"
       - "9101:9101"
-      - '29092:29092'
+      - "29092:29092"
     env_file:
       - ./.env
     healthcheck:
       test: [ "CMD", "nc", "-vz", "broker", "29092" ]
-
 
   schema-registry:
     image: confluentinc/cp-schema-registry:6.2.0
@@ -104,3 +103,49 @@ services:
       - clickhouse-node2
       - clickhouse-node3
       - clickhouse-node4
+
+  kafka-loader:
+    build:
+      context: .
+      dockerfile: Dockerfile-loader-kafka
+    volumes:
+      - ./loader_data_to_kafka:/loader_data_to_kafka
+    env_file:
+      - ./.env
+    ports:
+      - 9999:9999
+    depends_on:
+      - broker
+      - schema-registry
+
+  auth:
+    build:
+      context: .
+      dockerfile: Dockerfile-auth
+    volumes:
+      - ./auth:/auth
+    env_file:
+      - ./.env
+    ports:
+      - 8001:8001
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:13-alpine
+    env_file:
+      ./.env
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+
+  redis:
+    image: redis
+    volumes:
+      - redis_data:/data
+
+
+volumes:
+  pg_data:
+  redis_data:
