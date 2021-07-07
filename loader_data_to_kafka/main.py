@@ -33,7 +33,7 @@ async def shutdown():
 @app.post("/progress-film/", tags=["produce_received_data"])
 async def kafka_produce_received_data(
     progress_film: ProgressFilmModel,
-    auth_user=Depends(auth_current_user),
+    # auth_user=Depends(auth_current_user),
     producer: AIOKafkaProducer = Depends(get_kafka_producer),
 ):
     await producer.send(
@@ -41,7 +41,6 @@ async def kafka_produce_received_data(
         value=progress_film.json().encode(),
         key=f"{progress_film.user_id}_{progress_film.movie_id}".encode(),
     )
-
 
 if __name__ == "__main__":
     uvicorn.run(
