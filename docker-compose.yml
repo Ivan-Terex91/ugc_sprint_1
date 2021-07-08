@@ -19,6 +19,8 @@ services:
       - "9000:9000"
     volumes:
       - ./clickhouse/node1:/etc/clickhouse-server
+      - ./docker-entrypoint-initdb.d/init_clickhouse_node1-replica.sql:/docker-entrypoint-initdb.d/init_clickhouse_node1-replica.sql
+      - ./docker-entrypoint-initdb.d/init_clickhouse_node1-shard.sql:/docker-entrypoint-initdb.d/init_clickhouse_node1-shard.sql
     depends_on:
       - zookeeper
 
@@ -37,6 +39,8 @@ services:
     hostname: clickhouse-node3
     volumes:
       - ./clickhouse/node3:/etc/clickhouse-server
+      - ./docker-entrypoint-initdb.d/init_clickhouse_node3-replica.sql:/docker-entrypoint-initdb.d/init_clickhouse_node3-replica.sql
+      - ./docker-entrypoint-initdb.d/init_clickhouse_node3-shard.sql:/docker-entrypoint-initdb.d/init_clickhouse_node3-shard.sql
     depends_on:
       - zookeeper
 
@@ -138,7 +142,7 @@ services:
       ./.env
     volumes:
       - pg_data:/var/lib/postgresql/data
-      - ./docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+      - ./docker-entrypoint-initdb.d/init_db.sh:/docker-entrypoint-initdb.d/init_db.sh
 
   redis:
     image: redis
