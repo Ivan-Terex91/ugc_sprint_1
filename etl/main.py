@@ -1,7 +1,7 @@
 import os
 
 from coroutines import (consume_film_views_from_kafka, transform_view_data,
-                        write_to_clickhouse)
+                        write_to_clickhouse, buffer_data)
 from kafka import KafkaConsumer
 
 from clickhouse_driver import Client
@@ -18,5 +18,6 @@ if __name__ == "__main__":
     db = Client(host='clickhouse-node1')
 
     writer_sink = write_to_clickhouse(consumer, os.getenv("MOVIE_VIEWS_TOPIC"), db)
-    view_data = transform_view_data(writer_sink)
+    buffer = buffer_data(writer_sink, 10)
+    view_data = transform_view_data(buffer)
     film_views_from_kafka = consume_film_views_from_kafka(consumer, view_data)
