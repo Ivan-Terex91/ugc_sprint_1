@@ -1,2 +1,5 @@
 clickhouse-driver==0.2.1
 kafka-python==2.0.2
+coloredlogs==15.0
+backoff==1.10.0
+python-dateutil==2.8.1
