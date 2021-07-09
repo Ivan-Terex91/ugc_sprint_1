@@ -6,7 +6,7 @@ component "ETL\nPostgres\nto Elastic" as ETL_PG_ES #line:blue
 component "Movies\nService" as Movies
 component "Auth\nService" as Auth #line:green
 component "ETL\nKafka\nto ClickHouse" as ETL_KF_CH #line:gray
-component "Buffer data\nto Kafka Service" as Buf_Kafka #line:gray
+component "Loader data\nto Kafka Service" as LoaderKafka #line:gray
 database Postgres
 database Redis
 database Elastic
@@ -30,8 +30,8 @@ ETL_PG_ES -[#blue]-> Elastic: "Загрузка новых / обновлённ�
 
 Postgres <-[#orange] AdminService: "Загрузка контента в базу"
 
-Buf_Kafka <-[#gray] Movies: "Отправка данных"
-Buf_Kafka -[#gray]-> Kafka: "Загрузка данных"
+LoaderKafka <-[#gray] Movies: "Отправка данных"
+LoaderKafka -[#gray]-> Kafka: "Загрузка данных"
 Kafka <-[#gray]- ETL_KF_CH: "Запрос новых / обновлённых данных"
 ClickHouse <-[#gray]- ETL_KF_CH: "Загрузка новых / обновлённых данных"
 @enduml
