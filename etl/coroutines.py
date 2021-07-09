@@ -2,7 +2,7 @@ import logging
 import coloredlogs
 
 from functools import wraps
-
+from collections import deque
 from kafka import OffsetAndMetadata, TopicPartition
 
 from datetime import datetime
@@ -59,13 +59,13 @@ def transform_view_data(target):
 
 @coroutine
 def buffer_data(target, size_buffer=1000):
-    part = []
+    part = deque()
     while data := (yield):
         offset, partition, view_event = data
         part.append(view_event)
         if len(part) >= size_buffer:
-            target.send((offset, partition, part))
-            part = list()
+            target.send((offset, partition, list(part)))
+            part.clear()
 
 
 @coroutine
