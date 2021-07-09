@@ -8,36 +8,34 @@
 
 Задания на спринт вы найдёте внутри тем.
 
-# Настройка Clickhouse
 
-```bash
-docker exec -it clickhouse-node1 bash 
+# Запуск проекта
 
-clickhouse-client 
-```
+1. Скопировать переменные окружения командой `make copy_env_file`.
+2. Запустить `docker-compose up -d --build`
 
-```sql
-CREATE DATABASE shard;
-CREATE DATABASE replica;
-CREATE TABLE shard.views (user_id String, movie_id String, viewing_progress Int64, viewing_date DateTime) Engine=ReplicatedMergeTree('/clickhouse/tables/shard1/views', 'replica_1') PARTITION BY toYYYYMMDD(viewing_date) ORDER BY user_id;
-CREATE TABLE replica.views (user_id String, movie_id String, viewing_progress Int64, viewing_date DateTime) Engine=ReplicatedMergeTree('/clickhouse/tables/shard2/views', 'replica_2') PARTITION BY toYYYYMMDD(viewing_date) ORDER BY user_id;
-CREATE TABLE default.views (user_id String, movie_id String, viewing_progress Int64, viewing_date DateTime) ENGINE = Distributed('company_cluster', '', views, rand());
-exit
-exit
-```
 
-```bash
-docker exec -it clickhouse-node1 bash 
+[Отрисовка архитектуры](https://github.com/Ivan-Terex91/ugc_sprint_1/pull/8)
+1. Добавлены скрипт и UML диаграмма AS IS
+2. Добавлены скрипт и UML диаграмма TO BE, диграмма немного подкорректированна в [коммите](https://github.com/Ivan-Terex91/ugc_sprint_1/commit/fcc5997bbdd5fd711da23fdf7447532cb2c55e87)
 
-clickhouse-client 
-```
 
-```sql
-CREATE DATABASE shard;
-CREATE DATABASE replica;
-CREATE TABLE shard.views (user_id String, movie_id String, viewing_progress Int64, viewing_date DateTime) Engine=ReplicatedMergeTree('/clickhouse/tables/shard2/views', 'replica_1') PARTITION BY toYYYYMMDD(viewing_date) ORDER BY user_id;
-CREATE TABLE replica.views (user_id String, movie_id String, viewing_progress Int64, viewing_date DateTime) Engine=ReplicatedMergeTree('/clickhouse/tables/shard1/views', 'replica_2') PARTITION BY toYYYYMMDD(viewing_date) ORDER BY user_id;
-CREATE TABLE default.views (user_id String, movie_id String, viewing_progress Int64, viewing_date DateTime) ENGINE = Distributed('company_cluster', '', views, rand());
-exit
-exit
-```
+[Docker-compose](https://github.com/Ivan-Terex91/ugc_sprint_1/pull/9)
+1. Добавлен файл docker-compose
+2. Добавлены конфиги для ClickHouse
+
+
+[Сервис по загрузке данных в Kafka](https://github.com/Ivan-Terex91/ugc_sprint_1/pull/13)
+1. Cервис, который принимает и отправляет данные в Kafka
+2. Добавлен сервис auth из предыдущего спринта
+3. Проверка актуальности токена
+4. Dockerfile для сервиса
+
+
+[Загрузка данных из Kafka](https://github.com/Ivan-Terex91/ugc_sprint_1/pull/12/)
+1. Добавлена загрузка данных из Kafka
+
+
+[Загрузка данных в ClickHouse](https://github.com/Ivan-Terex91/ugc_sprint_1/pull/14/)
+1. Добавлена загрузка данных в ClickHouse
+2. Создание необходимых таблиц при запуске
